@@ -31,7 +31,7 @@ namespace EasyTCP
                 isOpen = false;
                 throw (new ChannelRegistrationException("Unable to add channel to channel list"));
             }
-            string data = "";
+
             using (stream = thisClient.GetStream())
             {
                 int position;
@@ -46,13 +46,13 @@ namespace EasyTCP
                     {
                         while ((position = stream.Read(buffer, 0, buffer.Length)) != 0 && isOpen)
                         {
-                            data = Encoding.UTF8.GetString(buffer, 0, position);
                             var args = new DataReceivedArgs()
                             {
-                                Message = data,
                                 ConnectionId = Id,
                                 ThisChannel = this
                             };
+
+                            Buffer.BlockCopy(buffer, 0, args.Data, 0, position);
 
                             thisServer.OnDataIn(args);
                             if(!isOpen) { break; }
@@ -62,9 +62,8 @@ namespace EasyTCP
             }
         }
 
-        public void Send(string message)
+        public void Send(byte[] data)
         {
-            var data = Encoding.UTF8.GetBytes(message);
             stream.Write(data, 0, data.Length);
         }
 

@@ -8,7 +8,7 @@ namespace EasyTCP
     public class DataReceivedArgs : EventArgs, IDisposable
     {
         public string ConnectionId { get; set; }
-        public string Message { get; set; }
+        public byte[] Data { get; set; }
         public Channel ThisChannel { get; set; }
 
         public void Dispose()

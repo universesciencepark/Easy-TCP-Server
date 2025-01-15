@@ -29,6 +29,11 @@ namespace EasyTCP
             Listener = new TcpListener(IPAddress.Parse(Globals.ServerAddress), Globals.ServerPort);
         }
 
+        public Server(string ip, int port)
+        {
+            Listener = new TcpListener(IPAddress.Parse(ip), port);
+        }
+
         public async void Start()
         {
             try

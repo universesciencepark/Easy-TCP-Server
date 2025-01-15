@@ -18,7 +18,7 @@ namespace EasyTCP
         public Channel(Server myServer)
         {
             thisServer = myServer;
-            buffer = new byte[256];
+            buffer = new byte[1024];
             Id = Guid.NewGuid().ToString();
         }
 
@@ -32,6 +32,8 @@ namespace EasyTCP
                 throw (new ChannelRegistrationException("Unable to add channel to channel list"));
             }
 
+            thisServer.OnClientConnected(new ClientStateArgs() { ConnectionId = Id, ThisChannel = this });
+
             using (stream = thisClient.GetStream())
             {
                 int position;
@@ -40,6 +42,7 @@ namespace EasyTCP
                 {
                     if (clientDisconnected())
                     {
+                        thisServer.OnClientDisconnected(new ClientStateArgs() { ConnectionId = Id, ThisChannel = this });
                         Close();
                     }
                     else

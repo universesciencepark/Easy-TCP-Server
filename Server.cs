@@ -20,6 +20,9 @@ namespace EasyTCP
                 _running = value;
             }
         }
+
+        public event EventHandler<ClientStateArgs> ClientConnected;
+        public event EventHandler<ClientStateArgs> ClientDisconnected;
         public event EventHandler<DataReceivedArgs> DataReceived;
         private TcpListener Listener;
         public Channels ConnectedChannels;
@@ -62,6 +65,16 @@ namespace EasyTCP
         {
             Listener.Stop();
             Running = false;
+        }
+
+        public void OnClientConnected(ClientStateArgs e)
+        {
+            ClientConnected?.Invoke(this, e);
+        }
+
+        public void OnClientDisconnected(ClientStateArgs e)
+        {
+            ClientDisconnected?.Invoke(this, e);
         }
 
         public void OnDataIn(DataReceivedArgs e)

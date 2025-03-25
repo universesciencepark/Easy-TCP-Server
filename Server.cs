@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyTCP
@@ -25,6 +26,7 @@ namespace EasyTCP
         public event EventHandler<ClientStateArgs> ClientDisconnected;
         public event EventHandler<DataReceivedArgs> DataReceived;
         private TcpListener Listener;
+        private CancellationTokenSource _cts;
         public Channels ConnectedChannels;
         
         public Server()
@@ -44,10 +46,11 @@ namespace EasyTCP
                 Listener.Start();
                 Running = true;
                 ConnectedChannels = new Channels(this);
+                _cts = new CancellationTokenSource();
                 while (Running)
                 {
-                    var client = await Listener.AcceptTcpClientAsync();
-                    Task.Run(() => new Channel(this).Open(client));
+                    var client = await Listener.AcceptTcpClientAsync(_cts.Token);
+                    _= Task.Run(() => new Channel(this).Open(client));
                 }
 
             }
@@ -59,10 +62,15 @@ namespace EasyTCP
             {
                 throw;
             }
+            catch(OperationCanceledException)
+            {
+                // This happens when Stop() is run
+            }
         }
 
         public void Stop()
         {
+            _cts.Cancel();
             Listener.Stop();
             Running = false;
         }

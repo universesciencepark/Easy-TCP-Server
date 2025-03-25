@@ -18,7 +18,7 @@ namespace EasyTCP
         public Channel(Server myServer)
         {
             thisServer = myServer;
-            buffer = new byte[1024];
+            buffer = new byte[2048];
             Id = Guid.NewGuid().ToString();
         }
 
@@ -36,7 +36,7 @@ namespace EasyTCP
 
             using (stream = thisClient.GetStream())
             {
-                int position;
+                int position = 0;
 
                 while(isOpen)
                 {
@@ -52,7 +52,8 @@ namespace EasyTCP
                             var args = new DataReceivedArgs()
                             {
                                 ConnectionId = Id,
-                                ThisChannel = this
+                                ThisChannel = this,
+                                ReceivedDataSize = position
                             };
 
                             Buffer.BlockCopy(buffer, 0, args.Data, 0, position);

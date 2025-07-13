@@ -39,7 +39,7 @@ namespace EasyTCP
             Listener = new TcpListener(IPAddress.Parse(ip), port);
         }
 
-        public async void Start()
+        public async Task Start()
         {
             try
             {

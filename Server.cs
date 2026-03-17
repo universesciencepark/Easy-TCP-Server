@@ -9,7 +9,7 @@ namespace EasyTCP
   
     public class Server
     {
-        private bool _running;
+        private volatile bool _running;
         public bool Running
         {
             get
